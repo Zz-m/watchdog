@@ -1,0 +1,48 @@
+<configuration>
+
+    <property name="LOG_DIR" value="${EXT_DIR:-/sdcard}/Android/data/${PACKAGE_NAME}/cache/logback" />
+
+    <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender">
+        <tagEncoder>
+            <pattern>%logger{12}</pattern>
+        </tagEncoder>
+        <encoder>
+            <pattern>[%-20thread] %msg</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="Rolling" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <lazy>true</lazy>
+        <!-- active log file -->
+        <file>${LOG_DIR}/log.txt</file>
+        <encoder>
+            <pattern>%d [%thread] %logger{35} - %msg%n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover period -->
+            <fileNamePattern>${LOG_DIR}/log.%d.txt</fileNamePattern>
+            <!-- keep 27 days' worth of history -->
+            <maxHistory>27</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="Crash" class="ch.qos.logback.core.FileAppender">
+        <!-- lazy initialization: don't create the file until 1st write -->
+        <lazy>true</lazy>
+        <file>${LOG_DIR}/crash.txt</file>
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="logcat" />
+        <appender-ref ref="Rolling" />
+    </root>
+
+    <logger name="com.c60info.www.luyaoapp.util.CustomExceptionHandler">
+        <appender-ref ref="Crash" />
+    </logger>
+
+</configuration>
